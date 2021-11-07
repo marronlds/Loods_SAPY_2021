@@ -1,0 +1,42 @@
+Results file for the SAPY Assignment
+
+Selected Sustainable Development Goals:
+    https://unstats.un.org/sdgs/unsdg
+    
+    - Goal 5: Achieve gender equality and empower all women and girls
+        Target 5.5: Ensure women's full and effective participation and equal 
+        opportunities for leadership at all levels of decision-making in 
+        political, economic and public life
+        
+        --> Indicator 5.5.2: Proportion of women in managerial positions (%)
+    
+    - Goal 7: Ensure access to affordable, reliable, sustainable and modern 
+        energy for all
+        Target 7.2: By 2030, increase substantially the share of renewable 
+        energy in the global energy mix
+        
+        --> Indicator 7.2.1: Renewable energy share in the total final energy consumption (%)
+
+
+2018 is the most recent year for goal 7 and both goals have sufficient data for this year. Therefore, this year is selected.
+
+
+Lilliefors results Goal 5: (0.07731910636894324, 0.21535038152401192)
+The correlation is not statistically significant, as the p-value is: 0.2154.
+
+Lilliefors results Goal 7: (0.1339910250281786, 0.0009999999999998899)
+The correlation is statistically significant at a level of 0.01.
+The results of the Spearman's R test are: 
+
+Correlation: -0.08582650618792549
+P-value: -0.08582650618792549
+The correlation is not statistically significant, as the p-value is: 0.4293.
+
+The results indicate that there is probably no relation between the percentage of population with electricity access and the 
+proportion of women in managerial positions.
+If the result had been significant, there would have been a slight trade-off between the SDGs. Although the indicators are very different 
+and based upon many different factors, it could make more sense if the indicators were positively correlated, because both indicate some 
+kind of positive development which is strived for by most countries. Therefore, it is expected that the measured trade-off is very insignificant.
+The means of the goals are 33.03% and 22.50%.
+
+The world map shows a very scattered distribution of countries in which one, both, or neither of the targets is met. Meeting the target here means scoring above the mean of that goal within all selected countries. No patterns can be noticed from this map.

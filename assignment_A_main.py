@@ -6,60 +6,19 @@ Author:         Marron Loods
 Coordinator:    Laura Scherer
 Date:           November 9, 2021
 
-
-Reading guide:
+Research question: 
     
-    - For the full description of this assignment see SAPY_assignment.pdf
-        in the folder of this code.
-    - Code cells are numbered based on the assignment tasks.
-    - Tasks are listed in order except for:
-        - Task 8: Radio button, which is commented out in cell 4d.1. The 
-            section between #### can be commented in to enable the radio 
-            button, but the cells below need to be run manually afterwards.
-            It is therefore recommended to run the entire code first, then 
-            uncomment the commented code in cell 4d.1, rerun cell 4d.1 to make
-            a selection, and finally rerun 4d.2 to read the new results in the
-            console.
-        - Task 9: 
-            a-d Done throughout entire code.
-            e Code documentation automatically generated through Sphinx.
-        - Task 10
-    - Code commented out in current file to avoid spamming console/files:
-        - 2b.1 Tables with count of data points per year in cell 
-        - 3b Sanity test to check whether the lists of countries are identical
-        - 4b.1 First scatterplot savefig
-        - 4b.2 Boxplot savefig
-        - 4c.1 Table with outliers 
-        - 4c.2 New scatterplot with outliers in color savefig
-
-Disclaimers:
-
-    - GUI not placed in different file                                              ### QUESTION IN CLASS
-    - On my computer, the working directory file keeps changing. Therefore, I 
-        made a variable current_folder. If current_folder = '' does not work,
-        please copy-paste the relative path name of the folder in which the 
-        current file is stored, to ensure that all files are found.
-    - When you close the window in which you select the correlation coefficient,
-        Python gives the error "SystemExit: 0"
-    - After selecting with the GUI, the rest of the code needs to be rerun          ### QUESTION IN CLASS
-    - Sometimes, the following warning is shown:
-        "Figures now render in the Plots pane by default. To make them also 
-        appear inline in the Console, uncheck "Mute Inline Plotting" under the      ### QUESTION IN CLASS
-        Plots pane options menu."
-        Please follow those instructions if wanted 
-        (Go to Plots, probaby in top right pane > Click on hamburger menu in top
-         right corner > Uncheck Mute inline plotting)
-    - To practice with writing code documentation, this has been done for three
-        functions only: significance, correlation_test, and target_reached
-    - Statistical test results are not rounded in the console or Results.txt
+    Are social and environmental Sustainable Development Goals (SDGs) 
+    correlated, and is there rather a trade-off or a synergy between the two?
 
 Accompanying files:
     
-    - functions.py
+    - assignment_A_functions.py
     - Data files (MS Excel): 'Goal5' (renamed after download), 
                              'Goal7' (renamed after download),
                              'TOTAL_POPULATION_BOTH_SEXES',   
                              'UNSD — Methodology
+    - README.md               
     All other files are generated while running code, but also submitted via BS                       
 
 Steps taken from anaconda prompt:
@@ -69,6 +28,8 @@ Steps taken from anaconda prompt:
     - Install: statsmodels, matplotlib, openpyxl, sphinx
     - Install (after previous installations!) geopandas
     
+
+For the reading guide and some disclaimers, please see the README file.
 """
 
 
@@ -106,7 +67,7 @@ time_table = {}
 time_total = time()
 
 #%% 1.1 Import data
-time_cell = time()
+time_cell = time() # Start timing this code cells
 
 SDGs = """
 Selected Sustainable Development Goals:
@@ -134,7 +95,8 @@ goal5_label = 'Goal 5.5: Proportion of women in managerial positions (%)'
 goal7_label ='Goal 7.2: Renewable energy share (%)'
 
 
-# Profile code cell
+# Note time of running code cell in time_total dictionary
+# This is repeated in each code cell
 time_table['1.1'] = time() - time_cell
 
 #%% 1.2 Check for missing values
@@ -143,7 +105,7 @@ time_cell = time()
 if (pd.notna(goal5['Value'].all()) and pd.notna(goal7_2['Value'].all())):
     print("\nGoals 5 and 7 have no missing values")
 else:
-    print("\nThere are missing values. Uncomment lines to determine which goals.") #WHICH LINES???
+    print("\nThere are missing values. Uncomment lines to determine which goals.") 
     
 print("\nNote: Countries/years for which data is missing are not in the files, as the rows simply not included. Therefore, there are no values for missing data.")
 print("\n----------\n")
@@ -295,7 +257,7 @@ print("Outliers Indices: {}\n".format(outliers_indices))
 #     print(data[ii])
 
 print("After inspection, it is concluded that the ouliers are not erroneous,\n \
-however, they are removed to better determine a potential relation.")                               #CHANGE?
+however, they are removed to better determine a potential relation.")
 print("\n----------\n")
 
 # Remove outliers
@@ -462,13 +424,18 @@ goals['Sizes'] = goals['Population'] / 500
 
 # Top 10 countries with largest population
 population10 = goals.nlargest(10, 'Population') 
-population10.reset_index(inplace=True)
+# Drop USA because of overlapping labels. Index value is the same as in goals.
+US_index = population10.loc[population10['GeoAreaName'] == 'United States of America'].index.values[0]
+population10.drop([US_index], inplace=True) 
+population10.reset_index(inplace=True) # Reset index for the for-loop
 
 # Make bubble chart
 plt.scatter(goals['Goal5'], goals['Goal7'], s=goals['Sizes'])
 for i in range(population10.shape[0]):
     plt.text(x=population10.Goal5[i]+0.5,y=population10.Goal7[i]+0.5,s=population10.GeoAreaName[i], 
           fontdict=dict(color='black',size=8))
+plt.text(x=goals.Goal5[US_index]+0.5,y=goals.Goal7[US_index]+2,s=goals.GeoAreaName[90], 
+      fontdict=dict(color='black',size=8))
 plt.xlabel(goal5_label)
 plt.ylabel(goal7_label)
 plt.xlim(0, goals['Goal5'].max()+7)
@@ -498,7 +465,6 @@ goals['iso_a3'] = goals_match_code['ISO-alpha3 Code'].values
 # Some countries are missing in the world map, probably because they are too small
 # However, the country codes of CYP, FRA and NOR had incorrect values
 # These are changed below.
-
 world.loc[world['name'] == 'France', 'iso_a3'] = 'FRA'
 world.loc[world['name'] == 'Norway', 'iso_a3'] = 'NOR'
 world.loc[world['name'] == 'Cyprus', 'iso_a3'] = 'CYP'

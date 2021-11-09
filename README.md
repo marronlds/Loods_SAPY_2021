@@ -43,11 +43,12 @@ Selected Sustainable Development Goals:
 - **pycache:** Related to Sphinx
 
 ## Installation
-- **Required steps:**
-  1 New environment created and activated
-  2 Install: Spyder
-  3 Install: statsmodels, matplotlib, openpyxl, sphinx
-  4 Install (after previous installations!) geopandas
+- **Required steps from prompt:**
+  1. New environment created and activated
+  2. Install: Spyder
+  3. Install: statsmodels, matplotlib, openpyxl
+  4. Install (after previous installations!) geopandas
+  5. Install sphinx
   
 - **Imports:** geopandas, pandas, matplotlib.pyplot, numpy, sys, time, statsmodels.stats.diagnostic
 

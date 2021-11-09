@@ -119,8 +119,7 @@ time_cell = time()
 # print("Goal 5:\n", goal5.groupby(['TimePeriod']).count())
 # print("\nGoal 7:\n", goal7_2.groupby(['TimePeriod']).count())
     
-year_selection_text = "2018 is the most recent year for goal 7 and both goals have sufficient data for this year. Therefore, this year is selected."
-print(year_selection_text)
+print("2018 is the most recent year for goal 7 and both goals have sufficient data for this year. Therefore, this year is selected.")
 print("\n----------\n")
 
 # Profile code cell
@@ -155,11 +154,11 @@ goal7_2_clean = goal7_2_2018[goal7_2_2018.GeoAreaCode.isin(goal5_clean['GeoAreaC
 # Make a column which deducts the area codes of both datasets
 # The sum of this column should be 0 if the sets are identical
 goal7_2_clean['Identical'] = goal5_clean['GeoAreaCode'].to_numpy() - goal7_2_clean['GeoAreaCode'].to_numpy()
-# if goal7_2_clean['Identical'].sum() == 0:
-#     print("The sets of countries are identical.")
-# else:
-#     print("The sets of countries are not identical.")
-# print("\n----------\n")
+if goal7_2_clean['Identical'].sum() == 0:
+    print("The sets of countries are identical.")
+else:
+    print("The sets of countries are not identical.")
+print("\n----------\n")
 
 # Reset index
 goal5_clean.reset_index(inplace=True)
@@ -184,9 +183,8 @@ lillie7 = lilliefors(goal7_2_clean['Value'], dist='norm')
 # Print results and whether the results are significant
 result_lillie5 = "Lilliefors results Goal 5: " + str(lillie5)  + "\n" + significance(lillie5)
 result_lillie7 = "\nLilliefors results Goal 7: " + str(lillie7) + "\n" + significance(lillie7)
-print(result_lillie5)          
-print(result_lillie7)          
 
+print(result_lillie5 + "\n" + result_lillie7) 
 print("\n----------\n")
 
 """
@@ -210,13 +208,9 @@ plt.xlim(0, goal5_clean['Value'].max()+1)
 plt.ylim(0, goal7_2_clean['Value'].max()+1) 
 plt.legend(["country"])
 # plt.savefig('scatter_original.png', bbox_inches='tight')
-# plt.show()
 plt.close()
 
 homoscedasticity_text = "The scatterplot shows that the data is heteroscedastic."
-
-print(homoscedasticity_text)
-print("\n----------\n")
 
 time_table['4b.1'] = time() - time_cell
 
@@ -236,11 +230,8 @@ plt.xticks([])
 plt.xlabel('Goal 7')
 plt.ylim(goal7_2_clean['Value'].min()-1, goal7_2_clean['Value'].max()+1)
 # plt.savefig('box.png', bbox_inches= 'tight')
-plt.show()
 plt.close()
 
-print("The boxplots show that both goals have one or more outliers.")
-print("\n----------\n")
 
 time_table['4b.2'] = time() - time_cell
 
@@ -256,7 +247,7 @@ print("Outliers Indices: {}\n".format(outliers_indices))
 # for ii in outliers_indices:
 #     print(data[ii])
 
-print("After inspection, it is concluded that the ouliers are not erroneous,\n \
+print("After inspection of boxplots, it is concluded that the ouliers are not erroneous,\n \
 however, they are removed to better determine a potential relation.")
 print("\n----------\n")
 
@@ -279,7 +270,6 @@ plt.xlim(0, goal5_incl_outliers['Value'].max()+1)
 plt.ylim(0, goal7_incl_outliers['Value'].max()+1) 
 plt.legend(["Outlier", "Country"])
 # plt.savefig('scatter_colored_outliers.png', bbox_inches='tight')
-plt.show()
 plt.close()
 
 print("After removing the outliers, the scatterplot still indicates that the data is heteroscedastic and no relation can be determined from eyeballing.")  #CHANGE?
@@ -293,10 +283,11 @@ time_cell = time()
 # If radio button is commented out, default is False    
 parametric_bool = False
 
-print("Spearman correlation coefficient set up as default, because assumptions (normality, parametric) not fulfilled.")
-print("If radio-button is enabled, see text below to determine which coefficient is used.")
+parametric_text = "Spearman correlation coefficient set up as default, because assumptions (normality, parametric) not fulfilled.\n"
 
 ####### SECTION BELOW SHOULD BE COMMENTED OUT TO DISABLE RADIO BUTTON #########
+
+# parametric_text = "Radio button enabled.\n"
 
 # # Imports  
 # from PyQt5.QtWidgets import  QApplication
@@ -320,18 +311,21 @@ correlation_result = correlation_test(parametric_bool, goal5_clean['Value'], goa
 
 # Document correlation test for output file in cell 6
 correlation_name = ""
+correlation_type = ""
 
 if parametric_bool:
     correlation_name += "Pearson's R"
-    print("\nThe result of the " + correlation_name + " correlation test is: ", correlation_result)
+    correlation_type += "parametric"
 if not parametric_bool:
     correlation_name +="Spearman's R"
-    print("\nThe result of the  " + correlation_name + " correlation test is: ", correlation_result)
-print(significance(correlation_result))
+    correlation_type += "non-parametric"
 
+print(parametric_text)
+print("Correlation test used:", correlation_name)
+print("This test is " + correlation_type + ".")
 time_table['4d.2'] = time() - time_cell
 
-#%% 4e Print interpretation to console
+#%% 4e Write interpretation text
 time_cell = time()
 
 interpretation_text = "\nThe results indicate that there is probably no relation \
@@ -342,8 +336,6 @@ Although the indicators are very different \nand based upon many different facto
 make more sense if the indicators were positively correlated, because both \
 indicate some \nkind of positive development which is strived for by \
 most countries. Therefore, it seems logical that the measured trade-off is very insignificant."
-print(interpretation_text)
-print("\n----------\n")
 
 time_table['4e'] = time() - time_cell
 
@@ -391,7 +383,6 @@ plt.ylabel(goal7_label)
 plt.xlim(0, goals['Goal5'].max()+7)
 plt.ylim(0, goals['Goal7'].max()+2) 
 plt.savefig('bubble.png', bbox_inches= 'tight')
-plt.show()
 plt.close()
 
 time_table['5a.2'] = time() - time_cell
@@ -445,7 +436,9 @@ world_all['Goal7 mean'] = world_all['Goal7'].mean()
 # Determine whether the targets are reached and make new column
 world_all['targets'] = world_all.apply(target_reached, axis=1)
 
-means_text = "The means of the goals are {:.2f}% and {:.2f}%.".format(world_all['Goal5'].mean(), world_all['Goal7'].mean())
+means_text = "\nThe means of the goals are {:.2f}% and {:.2f}%.".format(world_all['Goal5'].mean(), world_all['Goal7'].mean())
+
+print("\n----------\n")
 
 time_table['5b.2'] = time() - time_cell
 
@@ -459,14 +452,13 @@ plt.ylabel('Longitude (°)')
 plt.xlim(-180, 180)
 plt.ylim(-90, 90) 
 plt.savefig('map.png', bbox_inches='tight')
-plt.show()
 plt.close()
 
-world_map_text = means_text + "\n\nThe world map shows a very scattered distribution of countries in which one, \
+world_map_text = "The world map shows a very scattered distribution of countries in which one, \
 both, or neither of the targets is met. Meeting the target here means scoring \n\
 above the mean of that goal within all selected countries. No patterns can be noticed from this map either, which is in line with previous results."
-
 print(world_map_text)
+print("\n----------\n")
 
 time_table['5b.3'] = time() - time_cell
 
@@ -475,17 +467,18 @@ time_cell = time()
 
 opening_text = "Results file for the SAPY Assignment\n" + SDGs + "\n"
 
-lilliefors_text = "\n\n" + result_lillie5 + "\n" + result_lillie7 
+year_selection_text = "Selected year: " + year_string
 
-correlation_text = "\nThe results of the " + correlation_name + \
-    " test are: \n\nCorrelation: " + \
+
+correlation_text = "\n\nThe " + correlation_name + " test is performed. This test is " \
+    + correlation_type + ".\nThe results of the test are: \n\nCorrelation: " + \
         str(round(correlation_result[0], 4)) + \
         "\nP-value: " + str(round(correlation_result[1], 4)) + "\n" +\
             significance(correlation_result)
 
 
-lines_of_text = [opening_text, year_selection_text, lilliefors_text, 
-                 correlation_text, interpretation_text, world_map_text]
+lines_of_text = [opening_text, year_selection_text, 
+                 correlation_text, interpretation_text]
 
 with open('sdg_correlation.txt', "w") as f:
     f.write("\n".join(lines_of_text))

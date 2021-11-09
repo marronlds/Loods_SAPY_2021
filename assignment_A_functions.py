@@ -50,14 +50,14 @@ def significance(test_result):
         """ 
         
     if test_result[1] > 0.1:
-        return "The correlation is not statistically significant, as the p-value is: " \
+        return "The result is not statistically significant, as the p-value is: " \
             + str(round(test_result[1], 4)) + "."
     elif test_result[1] > 0.05:
-        return "The correlation is statistically significant at a level of 0.1."
+        return "The result is statistically significant at a level of 0.1."
     elif test_result[1] > 0.01:
-        return "The correlation is statistically significant at a level of 0.05."
+        return "The result is statistically significant at a level of 0.05."
     else:
-        return "The correlation is statistically significant at a level of 0.01."
+        return "The result is statistically significant at a level of 0.01."
     
 #%% Mahalanobis Distance functions
 

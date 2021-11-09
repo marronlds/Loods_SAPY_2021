@@ -93,6 +93,8 @@ coefficient is used as default, based on the findings in the analysis.
 - Statistical test results are not rounded in the console or Results.txt
 - The documentation was generated when the python files were still called differently namely "assignment" and "functions".
   Therefore the pages in the readthedocs are still called this way. Please see the functions.html file for the documentation.
+- The GitHub is only updated a few times to practice with git, but is not completely up to date. Please see the uploaded
+  files in the zipped folder for the final submissions.
 
 
 ## Output

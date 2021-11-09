@@ -13,6 +13,8 @@ This file contains the functions which accompany the assignment.py code.
 #%% Imports
 
 import numpy as np
+from PyQt5.QtWidgets import (QLabel, QRadioButton, QVBoxLayout, QWidget)
+from PyQt5 import QtCore
 from scipy import stats
 
 
@@ -93,16 +95,8 @@ def MD_detectOutliers(data, extreme=False, verbose=False):
     the Mahalanobis distance and standard deviation.
     """
     MD = MahalanobisDist(data, verbose)
-    # one popular way to specify the threshold
-    #m = np.mean(MD)
-    #t = 3. * m if extreme else 2. * m
-    #outliers = []
-    #for i in range(len(MD)):
-    #    if MD[i] > t:
-    #        outliers.append(i)  # index of the outlier
-    #return np.array(outliers)
 
-    # or according to the 68–95–99.7 rule
+    # According to the 68–95–99.7 rule
     std = np.std(MD)
     k = 3. * std if extreme else 2. * std
     m = np.mean(MD)
@@ -129,27 +123,25 @@ def is_pos_def(A):
     
 #%% Correlation test    
 
-# The function takes a boolean which is stored in a list. The boolean indicates
+# The function takes a boolean which indicates
 # whether a parametric test should be used. If True, the pearson's R correlation
 # coefficient is calculated, if False, the Spearman's R test is used.
-# The function takes the last item of the paramtric_bool list in case multiple 
-# booleans are added by accident.
 
 
-def correlation_test(parametric_bool_list, goal5_data, goal7_data):
+def correlation_test(parametric_bool, goal5_data, goal7_data):
     """ Pearson or Spearman correlation test
     
     Performs the Pearson or Spearman correlation test, depending on whether the test should be parametric.
     
     Args:
-        parametric_bool_list (list): list of a boolean which indicates whether a parametric test should be used
+        parametric_bool (boolean): boolean which indicates whether a parametric test should be used
         goal5_data (Series): Column of dataframe with goal 5 data
         goal7_data (Series): Column of dataframe with goal 7 data
     Returns:
         Tuple with test results
  
     """
-    if parametric_bool_list[-1]:
+    if parametric_bool:
         return stats.pearsonr(goal5_data, goal7_data)
     else:
         return stats.spearmanr(goal5_data, goal7_data)
@@ -185,3 +177,48 @@ def target_reached(row):
         return "Both"
     else:
         return "No data"
+    
+#%%
+
+
+class SelectCoefficient(QWidget):
+
+    def __init__(self):
+        super().__init__()
+        self.init_ui()
+
+    def init_ui(self):
+        # Make labels and buttons
+        self.label = QLabel("Which correlation coefficient do you want to use?")
+        self.pearson = QRadioButton("Pearson's R")
+        self.spearman = QRadioButton("Spearman's R")
+        self.label2 = QLabel("")
+        
+        # Connect clicking of button to function onClicked
+        self.pearson.clicked.connect(self.select)
+        self.spearman.clicked.connect(self.select)
+
+        # Create layout of window
+        layout = QVBoxLayout()
+        layout.addWidget(self.label)
+        layout.addWidget(self.pearson)
+        layout.addWidget(self.spearman)
+        layout.addWidget(self.label2)
+        
+        # Create window
+        self.setGeometry(200, 200, 300, 150)
+        self.setLayout(layout)
+        self.setWindowTitle("Selection of correlation coefficient")
+        # Bring to front
+        self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
+        self.show()
+        
+        
+    def select(self):
+        radioBtn = self.sender()
+        if radioBtn == self.pearson:
+            self.parametric_bool = True
+        if radioBtn == self.spearman:
+            self.parametric_bool = False
+        if radioBtn.isChecked():
+            self.close()

@@ -18,7 +18,8 @@ Accompanying files:
                              'Goal7' (renamed after download),
                              'TOTAL_POPULATION_BOTH_SEXES',   
                              'UNSD — Methodology
-    - README.md               
+    - README.md  
+    - Docs: Files for Sphinx documentation generator             
     All other files are generated while running code, but also submitted via BS                       
 
 Steps taken from anaconda prompt:
@@ -51,7 +52,7 @@ pd.options.mode.chained_assignment = None
 # If the working directory is not the same folder as thid current file please 
 # paste the relative path + '/' below. Otherwise uncomment: current_folder = ''
 
-# current_folder = 'Documents/SAPY_local/Loods_Assignment/'
+# current_folder = 'Loods_Assignment/'
 current_folder = ''
 
 sys.path.insert(1, current_folder)
@@ -59,7 +60,6 @@ sys.path.insert(1, current_folder)
 # Import functions from functions.py
 from assignment_A_functions import (significance, MD_detectOutliers, 
                                     correlation_test, target_reached)
-
 
 #%% Initiate time profiling dictionary and total time variable
 
@@ -210,7 +210,7 @@ plt.xlim(0, goal5_clean['Value'].max()+1)
 plt.ylim(0, goal7_2_clean['Value'].max()+1) 
 plt.legend(["country"])
 # plt.savefig('scatter_original.png', bbox_inches='tight')
-plt.show()
+# plt.show()
 plt.close()
 
 homoscedasticity_text = "The scatterplot shows that the data is heteroscedastic."
@@ -260,8 +260,7 @@ print("After inspection, it is concluded that the ouliers are not erroneous,\n \
 however, they are removed to better determine a potential relation.")
 print("\n----------\n")
 
-# Remove outliers
-
+# Create copy with outliers and make new dataframes without outliers
 goal5_incl_outliers = goal5_clean.copy()
 goal7_incl_outliers = goal7_2_clean.copy()
 goal5_clean.drop(outliers_indices.tolist(), inplace=True) 
@@ -271,7 +270,6 @@ time_table['4c.1'] = time() - time_cell
 
 #%% 4c.2 Create new scatterplot with colored outliers
 time_cell = time()
-
 
 plt.scatter(goal5_incl_outliers['Value'], goal7_incl_outliers['Value'], c="tab:orange")
 plt.scatter(goal5_clean['Value'], goal7_2_clean['Value'], c="tab:blue")
@@ -293,73 +291,22 @@ time_table['4c.2'] = time() - time_cell
 time_cell = time()
 
 # If radio button is commented out, default is False    
-parametric_bool = [False]
+parametric_bool = False
 
 print("Spearman correlation coefficient set up as default, because assumptions (normality, parametric) not fulfilled.")
 print("If radio-button is enabled, see text below to determine which coefficient is used.")
 
-
 ####### SECTION BELOW SHOULD BE COMMENTED OUT TO DISABLE RADIO BUTTON #########
 
+# # Imports  
+# from PyQt5.QtWidgets import  QApplication
+# from assignment_A_functions import SelectCoefficient
 
-# from PyQt5.QtWidgets import (QLabel, QRadioButton, QVBoxLayout, QApplication, QWidget)
-
-
-# # In this variable, the selected correlation coefficient will be appended
-# # Overwrites default boolean
-# parametric_bool = []
-
-# class SelectCoefficient(QWidget):
-
-#     def __init__(self):
-#         super().__init__()
-#         self.init_ui()
-
-#     def init_ui(self):
-#         # Make labels and buttons
-#         self.label = QLabel("Which correlation coefficient do you want to use?")
-#         self.pearson = QRadioButton("Pearson's R")
-#         self.spearman = QRadioButton("Spearman's R")
-#         self.label2 = QLabel("")
-        
-#         # Connect clicking of button to function onClicked
-#         self.pearson.clicked.connect(self.select)
-#         self.spearman.clicked.connect(self.select)
-
-#         # Create layout of window
-#         layout = QVBoxLayout()
-#         layout.addWidget(self.label)
-#         layout.addWidget(self.pearson)
-#         layout.addWidget(self.spearman)
-#         layout.addWidget(self.label2)
-        
-#         # Create window
-#         self.setGeometry(200, 200, 300, 150)
-#         self.setLayout(layout)
-#         self.setWindowTitle("Selection of correlation coefficient")
-
-#         self.show()
-        
-#         # The clicked button is appended to correlation_bool
-#         # and window closed after selection
-#     def select(self):
-#         radioBtn = self.sender()
-#         if radioBtn == self.pearson:
-#             parametric_bool.append(True)
-#         if radioBtn == self.spearman:
-#             parametric_bool.append(False)
-#         if radioBtn.isChecked():
-#             self.close()
-    
-        
-# # Execute radio-button 
-# if __name__ == "__main__":    
-#     app = QApplication(sys.argv)
-#     ex = SelectCoefficient()
-#     time_table['4d.1 (radio button)'] = time() - time_cell
-#     sys.exit(app.exec_())
-    
-
+# app = QApplication(sys.argv)
+# ex = SelectCoefficient()
+# ex.show() 
+# app.exec_()
+# parametric_bool = ex.parametric_bool
 
 ####### SECTION ABOVE SHOULD BE COMMENTED OUT TO DISABLE RADIO BUTTON #########
 
@@ -374,10 +321,10 @@ correlation_result = correlation_test(parametric_bool, goal5_clean['Value'], goa
 # Document correlation test for output file in cell 6
 correlation_name = ""
 
-if parametric_bool[-1]:
+if parametric_bool:
     correlation_name += "Pearson's R"
     print("\nThe result of the " + correlation_name + " correlation test is: ", correlation_result)
-if not parametric_bool[-1]:
+if not parametric_bool:
     correlation_name +="Spearman's R"
     print("\nThe result of the  " + correlation_name + " correlation test is: ", correlation_result)
 print(significance(correlation_result))
@@ -408,10 +355,12 @@ population = pd.read_excel('TOTAL_POPULATION_BOTH_SEXES.xlsx', header=[16], usec
 population.sort_values(by=['Country code'], inplace=True)
 population_clean = population[population['Country code'].isin(goal5_clean['GeoAreaCode'])]
 
-# Make 1 dataframe with both goals and size, add population data for selected year
+# Make 1 dataframe with both goals, add population data for selected year
 goals = goal5_clean.copy()
 goals['Value7'] = goal7_2_clean['Value'].values
 goals['Population'] = population_clean[year_string].values.astype(float)
+
+# Change column names
 goals.rename(columns = {'Value':'Goal5', 'Value7':'Goal7'}, inplace = True)
 
 time_table['5a.1'] = time() - time_cell
@@ -424,6 +373,7 @@ goals['Sizes'] = goals['Population'] / 500
 
 # Top 10 countries with largest population
 population10 = goals.nlargest(10, 'Population') 
+
 # Drop USA because of overlapping labels. Index value is the same as in goals.
 US_index = population10.loc[population10['GeoAreaName'] == 'United States of America'].index.values[0]
 population10.drop([US_index], inplace=True) 
@@ -496,7 +446,6 @@ world_all['Goal7 mean'] = world_all['Goal7'].mean()
 world_all['targets'] = world_all.apply(target_reached, axis=1)
 
 means_text = "The means of the goals are {:.2f}% and {:.2f}%.".format(world_all['Goal5'].mean(), world_all['Goal7'].mean())
-print("\n----------\n")
 
 time_table['5b.2'] = time() - time_cell
 
@@ -535,8 +484,8 @@ correlation_text = "\nThe results of the " + correlation_name + \
             significance(correlation_result)
 
 
-lines_of_text = [opening_text, year_selection_text, lilliefors_text, correlation_text, 
-                 interpretation_text, world_map_text]
+lines_of_text = [opening_text, year_selection_text, lilliefors_text, 
+                 correlation_text, interpretation_text, world_map_text]
 
 with open('sdg_correlation.txt', "w") as f:
     f.write("\n".join(lines_of_text))
@@ -573,16 +522,13 @@ optimisation is not considered necessary.
     
 """
 
-#%% 
+#%% 10 Github
 
 """
-Still to do:
-    - Betere uitleg bovenaan voor aanpassingen
-    - ReadMe
+Please find the github for this assignment on the following website:
+    https://github.com/marronlds/Loods_SAPY_2021
 
-Vragen laatste college:
-    - GUI in ander python file
-    - Na GUI file verder laten runnen
-    - Warning about mute inline plotting
+The GitHub is used for practicing and does not contain the final code
+for the assignment.
 """
-
+#%%
